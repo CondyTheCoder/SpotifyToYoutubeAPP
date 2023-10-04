@@ -21,7 +21,38 @@ def login():
 
 @app.route('/getTracks')
 def getTracks():
-    return "Some drake songs"
+    token_info = get_token()
+    try:
+        token_info = get_token()
+    except:
+        print("user not authorized.")
+        return redirect("/")
+    
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    all_songs = []
+    iter = 0
+
+    while True:
+        items = sp.current_user_saved_tracks(limit = 50, offset = iter * 50)['items']
+        iter += 1
+        all_songs += items
+        if(len(items) < 50):
+            break
+    return str(len(all_songs))
+
+def get_token():
+    token_info = session.get(TOKEN_INFO, None)
+    if not token_info:
+        raise "exception"
+    now = int(time.time())
+
+    is_expired = token_info['expires_at'] - now < 60
+
+    if(is_expired):
+        sp_oauth = create_spotify_oauth()
+        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+    return token_info
+
 
 @app.route('/redirect')
 def redirectPage():
