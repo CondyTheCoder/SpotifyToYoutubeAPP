@@ -2,4 +2,8 @@
 
 Download Spotify songs using Youtube
 
-Run script 
+1. App.py for spotify data extraction
+
+2. Download.py for downloading from youtube
+
+
